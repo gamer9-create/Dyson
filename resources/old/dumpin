@@ -1,0 +1,3889 @@
+package game;
+
+import engine.info.*;
+import engine.logic.systems.shape.*;
+import engine.render.*;
+import engine.render.graphics2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.lang.Math;
+import java.nio.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+
+public class Main {
+    static Matrix4f projectionMatrix;
+    static FloatBuffer mat;
+    static InstancedModel[] objects;
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() throws Exception {
+        Dyson.initializeDyson();
+
+        Constants.rendererElementArray = ShapeProcessing.generateIndices3D(1);
+        Constants.rendererShader = "base3d";
+        Constants.rendererVertexArraySize = 12*6;
+        Constants.rendererTextureCoordinateArraySize = 8*6;
+        Window.setBackgroundColor(new Vector4f(0, 0, 0, 0));
+
+        Renderer.initialize();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+
+        Vector3f pos = new Vector3f(0, 0, 0);
+        Vector3f size = new Vector3f(0.5f,0.5f,0.5f);
+
+        InstancedModel one = new InstancedModel(new float[] {
+                //Back face
+                -pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+                -pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+
+                //Front face
+                -pos.x+size.x,pos.y+size.y,pos.z+size.z,
+                -pos.x+size.x,-pos.y+size.y,pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,pos.z+size.z,
+                pos.x+size.x,pos.y+size.y,pos.z+size.z,
+
+                //Right face
+                pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,pos.z+size.z,
+                pos.x+size.x,pos.y+size.y,pos.z+size.z,
+
+                //Left face
+                -pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+                -pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                -pos.x+size.x,-pos.y+size.y,pos.z+size.z,
+                -pos.x+size.x,pos.y+size.y,pos.z+size.z,
+
+                //Top face
+                -pos.x+size.x,pos.y+size.y,pos.z+size.z,
+                -pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,pos.y+size.y,pos.z+size.z,
+
+                //Bottom face
+                -pos.x+size.x,-pos.y+size.y,pos.z+size.z,
+                -pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,-pos.z+size.z,
+                pos.x+size.x,-pos.y+size.y,pos.z+size.z
+        }, new float[] {
+                //Back face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+
+                //Front face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+
+                //Right face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+
+                //Left face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+
+                //Top face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+
+                //Bottom face
+                0, 0,
+                0, 1,
+                1, 1,
+                1, 0,
+        });
+
+        objects = new InstancedModel[10];
+        objects[0] = one;
+
+        int[] windowSize = Constants.getWindowSizeAsINT();
+        int aspectRatio = windowSize[0] / windowSize[1];
+
+        projectionMatrix = new Matrix4f().setPerspective((float) Math.toRadians(70), aspectRatio, Constants.rendererNearPlane_intendedFor3D, Constants.rendererFarPlane_intendedFor3D);
+
+        mat = BufferUtils.createFloatBuffer(16);
+        projectionMatrix.get(mat);
+    }
+
+    public static void render() throws Exception {
+        Renderer.renderModels(objects, objects.length);
+        Renderer.bufferToScreen(mat);
+    }
+
+    public static void update() throws Exception {
+        Dyson.updateDyson();
+        projectionMatrix.get(mat);
+    }
+
+    public static void dispose() throws Exception {
+        Renderer.dispose();
+        Dyson.disposeDyson();
+    }
+}
+Base
+package game;
+
+import engine.render.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() throws Exception {
+    }
+
+    public static void render() throws Exception {
+    }
+
+    public static void update() throws Exception {
+    }
+
+    public static void dispose() throws Exception {
+    }
+}
+
+
+        //Renderer3D.addShape(new float[]
+                //     1                     2                   3                   4                     5                  6                  7                     8    \\
+        //        { -1, -1, -1,  /* | */  -1, -1, 0,  /* | */  1, -1, 1,  /* | */  1, -1, -1,  /* | */  -1, 1, -1,  /* | */  -1, 1, 0,  /* | */  1, 1, 1,  /* | */  1, 1, -1 }
+        //, new float[8]);
+
+        /*
+        Vector3f cubePosition = new Vector3f(0, 0, 0);
+        Vector3f cubeSize = new Vector3f(0.5f, 0.5f, 0.5f);
+
+        Renderer3D.addShape(new float[] {
+                cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+        }, new float[8]);
+
+         */
+         new float[] {
+                         cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y+cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z-cubeSize.z,
+                         cubePosition.x-cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                         cubePosition.x+cubeSize.x, cubePosition.y-cubeSize.y, cubePosition.z+cubeSize.z,
+                 };
+package game;
+
+import engine.logic.input.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.model3d.*;
+import org.joml.*;
+import org.lwjgl.glfw.GLFW;
+
+public class Main {
+    static Vector3f cubePosition = new Vector3f(1,0,0);
+    static Vector3f cubeSize = new Vector3f(0.5f, 0.5f, 0.5f);
+    static float[] vertices;
+
+    public static void main(String[] args) {
+        Window.run();
+    }
+
+    public static void initialize() {
+        Renderer3D.initialize();
+        ModelManager.initialize();
+
+        vertices = new float[47*2];
+
+        System.arraycopy(ShapeProcessing.generateSpriteShape3D(cubePosition, cubeSize), 0, vertices, 0, 47);
+        System.arraycopy(ShapeProcessing.generateSpriteShape3D(new Vector3f(1, 1, 1), cubeSize), 0, vertices, 47, 47);
+
+        float[] textCoords = new float[] {
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
+
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
+        };
+
+        int[] indices = new int[] {
+                0, 1, 3, 3, 1, 2,
+                8, 10, 11, 9, 8, 11,
+                12, 13, 7, 5, 12, 7,
+                14, 15, 6, 4, 14, 6,
+                16, 18, 19, 17, 16, 19,
+                4, 6, 7, 5, 4, 7,
+
+                19, 1+19, 3+19, 3+19, 1+19, 2+19,
+                8+19, 10+19, 11+19, 9+19, 8+19, 11+19,
+                12+19, 13+19, 7+19, 5+19, 12+19, 7+19,
+                14+19, 15+19, 6+19, 4+19, 14+19, 6+19,
+                16+19, 18+19, 19+19, 17+19, 16+19, 19+19,
+                4+19, 6+19, 7+19, 5+19, 4+19, 7+19,
+        };
+
+
+        Model cube = new Model();
+        cube.initialize(vertices, textCoords, new int[16]);
+
+        ModelManager.addModel(cube);
+
+    }
+
+    public static void render() {
+        Renderer3D.render(ModelManager.getModels());
+    }
+
+    public static void update() {
+        Renderer3D.update();
+
+        System.arraycopy(ShapeProcessing.generateSpriteShape3D(cubePosition, cubeSize), 0, vertices, 0, 47);
+        System.arraycopy(ShapeProcessing.generateSpriteShape3D(new Vector3f(1, 1, 1), cubeSize), 0, vertices, 47, 47);
+
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_W)) {
+            cubePosition.z += 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_S)) {
+            cubePosition.z -= 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_A)) {
+            cubePosition.x -= 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_D)) {
+            cubePosition.x += 0.1f;
+        }
+
+        ModelManager.getModels()[0].setVertices(vertices);
+    }
+
+    public static void dispose() {
+        Renderer3D.dispose();
+        ModelManager.disposeModels();
+    }
+}package game;
+
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.manage.*;
+ import engine.logic.buffers.modify.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.model2d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.awt.Rectangle;
+ import java.nio.*;
+
+ import static org.lwjgl.opengl.GL45.*;
+
+ public class Main {
+     static FloatBuffer worldMatrix;
+     static InstancedModel renderModel;
+     static InstancedModel model2;
+     static int timer, timerMax;
+     static boolean render;
+
+     public static void main(String[] args) {
+         Window.run();
+     }
+
+     public static void initialize() {
+         Renderer.initialize();
+
+         Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.5f)/2f, (0.01f/4f)/2f);
+
+         worldMatrix = BufferUtils.createFloatBuffer(16);
+
+         Matrix4f worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+         worldMatrixMat.get(worldMatrix);
+
+         renderModel = new InstancedModel(new Rectangle(-100, -100, 200, 200));
+         renderModel.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         renderModel.getVertices()[2] = 0;
+         renderModel.getVertices()[5] = 0;
+         renderModel.getVertices()[8] = 0;
+         renderModel.getVertices()[11] = 0;
+
+         model2 = new InstancedModel(new Rectangle(100, -100, 200, 200));
+         model2.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model2.getVertices()[2] = 1;
+         model2.getVertices()[5] = 1;
+         model2.getVertices()[8] = 1;
+         model2.getVertices()[11] = 1;
+
+         renderModel.loadModelImage(ResourceLoader.loadImageResource("resources/textures/tex.png"));
+
+         model2.loadModelImage(ResourceLoader.loadImageResource("resources/textures/tex2.png"));
+
+         timer = 0;
+         timerMax = 50;
+         render = true;
+     }
+
+     public static void render() {
+         timer += 1;
+         if (timer >= timerMax) {
+             if (render) {
+                 render = false;
+             } else {
+                 render = true;
+             }
+             timer = 0;
+         }
+         if (render) {
+             Renderer.renderModel(renderModel);
+             Renderer.renderModel(model2);
+         }
+
+         Renderer.bufferToScreen(worldMatrix);
+     }
+
+     public static void update() {
+         Renderer.update();
+     }
+
+     public static void dispose() {
+         Renderer.dispose();
+     }
+ }
+
+
+package game;
+
+import engine.logic.input.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.model3d.*;
+import org.joml.*;
+import org.lwjgl.glfw.GLFW;
+
+public class Main {
+    static Vector3f cubePosition = new Vector3f(1,0,0);
+    static Vector3f cubeSize = new Vector3f(0.5f, 0.5f, 0.5f);
+
+    public static void main(String[] args) {
+        Window.run();
+    }
+
+    public static void initialize() {
+        Renderer3D.initialize();
+        ModelManager.initialize();
+
+        float[] vertices = ShapeProcessing.generateSpriteShape3D(cubePosition, cubeSize);
+
+        float[] textCoords = new float[] {
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
+        };
+
+        int[] indices = new int[] {
+                0, 1, 3, 3, 1, 2,
+                8, 10, 11, 9, 8, 11,
+                12, 13, 7, 5, 12, 7,
+                14, 15, 6, 4, 14, 6,
+                16, 18, 19, 17, 16, 19,
+                4, 6, 7, 5, 4, 7,
+        };
+
+
+        Model cube = new Model();
+        cube.setModelMatrix(new Matrix4f());
+        cube.initialize(vertices, textCoords, indices);
+
+        ModelManager.addModel(cube);
+    }
+
+    public static void render() {
+        Renderer3D.render(ModelManager.getModels());
+    }
+
+    public static void update() {
+        Renderer3D.update();
+
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_W)) {
+            cubePosition.z += 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_S)) {
+            cubePosition.z -= 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_A)) {
+            cubePosition.x -= 0.1f;
+        }
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_D)) {
+            cubePosition.x += 0.1f;
+        }
+    }
+
+    public static void dispose() {
+        Renderer3D.dispose();
+        ModelManager.disposeModels();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.buffers.manage.*;
+import engine.logic.buffers.modify.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.Window;
+import engine.render.model2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.nio.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL45.*;
+
+public class Main {
+    static FloatBuffer worldMatrix;
+    static InstancedModel renderModel;
+    static InstancedModel model2;
+
+    public static void main(String[] args) {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() {
+        Renderer.initialize();
+
+        Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.5f), (0.01f/4f));
+
+        worldMatrix = BufferUtils.createFloatBuffer(16);
+
+        Matrix4f worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+        worldMatrixMat.get(worldMatrix);
+
+        renderModel = new InstancedModel(new Rectangle(-300, -50, 100, 100));
+        renderModel.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        renderModel.getVertices()[2] = 0;
+        renderModel.getVertices()[5] = 0;
+        renderModel.getVertices()[8] = 0;
+        renderModel.getVertices()[11] = 0;
+
+        model2 = new InstancedModel(new Rectangle(100, -50, 100, 100));
+        model2.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        model2.getVertices()[2] = 1;
+        model2.getVertices()[5] = 1;
+        model2.getVertices()[8] = 1;
+        model2.getVertices()[11] = 1;
+
+        renderModel.loadModelImage(ResourceLoader.loadImageResource("resources/textures/tex.png"));
+
+        model2.loadModelImage(ResourceLoader.loadImageResource("resources/textures/tex.png"));
+
+        //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+    }
+
+    public static void render() {
+        renderModel.getRectangle().setX(renderModel.getRectangle().getX() + 1);
+        renderModel.updateVertices();
+        model2.updateVertices();
+
+        Renderer.renderModel(renderModel);
+        Renderer.renderModel(model2);
+
+        Renderer.bufferToScreen(worldMatrix);
+    }
+
+    public static void update() {
+        Renderer.update();
+    }
+
+    public static void dispose() {
+        Renderer.dispose();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.model2d.*;
+import engine.render.ui2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.nio.*;
+import java.util.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL45.*;
+
+public class Main {
+    static Matrix4f worldMatrixMat;
+    static FloatBuffer worldMatrix;
+    static InstancedModel[] text;
+    static InstancedModel renderModel;
+    static InstancedModel model2;
+    static boolean color;
+
+    public static void main(String[] args) {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() {
+        Renderer.initialize();
+
+        Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+        worldMatrix = BufferUtils.createFloatBuffer(16);
+
+        worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+        worldMatrixMat.get(worldMatrix);
+
+        renderModel = new InstancedModel(new Rectangle(-300, -50, 100, 100));
+        renderModel.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        renderModel.getVertices()[2] = 0;
+        renderModel.getVertices()[5] = 0;
+        renderModel.getVertices()[8] = 0;
+        renderModel.getVertices()[11] = 0;
+
+        model2 = new InstancedModel(new Rectangle(0, -50, 100, 100));
+        model2.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        model2.getVertices()[2] = 1;
+        model2.getVertices()[5] = 1;
+        model2.getVertices()[8] = 1;
+        model2.getVertices()[11] = 1;
+
+        ImageResource resource = ResourceLoader.loadImageResource("resources/textures/fontthingal2.png");
+
+        int[] tex = GLResourceLoader.createTextureResource(resource);
+
+        renderModel.setTexture(tex);
+
+        model2.setTexture(tex);
+
+        //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+
+        int imageWidth = resource.getWidth().get(0);
+        int imageHeight = resource.getHeight().get(0);
+
+        String textToRender = "the quick brown fox jumps over the lazy dog 1234567890";
+
+        HashMap<Character, float[]> c = FontMaps.getDefaultCharacterMap(imageWidth, imageHeight);
+
+        text = new InstancedModel[textToRender.length()];
+
+        UITextBaker.bakeText(textToRender, text, tex, c, 1, -800, 375, 25, 25);
+    }
+
+    public static void render() {
+        //renderModel.getRectangle().setX(renderModel.getRectangle().getX() + 1);
+        //renderModel.updateVertices();
+        //model2.updateVertices();
+
+        //worldMatrixMat.translate(-3, 0, 0);
+        //worldMatrixMat.get(worldMatrix);
+
+        for (InstancedModel t : text) {
+            Renderer.renderModel(t);
+        }
+
+        Renderer.renderModel(renderModel);
+        Renderer.renderModel(model2);
+
+        Renderer.bufferToScreen(worldMatrix);
+    }
+
+    public static void update() {
+        Renderer.update();
+    }
+
+    public static void dispose() {
+        Renderer.dispose();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.model2d.*;
+import engine.render.ui2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.nio.*;
+import java.util.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL45.*;
+
+public class Main {
+    static Matrix4f worldMatrixMat;
+    static FloatBuffer worldMatrix;
+    static InstancedModel[] text;
+    static InstancedModel renderModel;
+    static InstancedModel model2;
+
+    public static void main(String[] args) {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() {
+        Renderer.initialize();
+        FontRenderer.initialize();
+
+        Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+        worldMatrix = BufferUtils.createFloatBuffer(16);
+
+        worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+        worldMatrixMat.get(worldMatrix);
+
+        renderModel = new InstancedModel(new Rectangle(-300, -50, 100, 100));
+        renderModel.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        renderModel.getVertices()[2] = 0;
+        renderModel.getVertices()[5] = 0;
+        renderModel.getVertices()[8] = 0;
+        renderModel.getVertices()[11] = 0;
+
+        model2 = new InstancedModel(new Rectangle(0, -50, 100, 100));
+        model2.setTextureCoordinates(new float[] {
+                0, 1,
+                1, 1,
+                1, 0,
+                0, 0
+        });
+
+        model2.getVertices()[2] = 1;
+        model2.getVertices()[5] = 1;
+        model2.getVertices()[8] = 1;
+        model2.getVertices()[11] = 1;
+
+        ImageResource resource = ResourceLoader.loadImageResource("resources/textures/fontthingal2.png");
+
+        int[] tex = GLResourceLoader.createTextureResource(resource);
+
+        renderModel.setTexture(tex);
+
+        model2.setTexture(tex);
+
+        //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+
+        int imageWidth = resource.getWidth().get(0);
+        int imageHeight = resource.getHeight().get(0);
+
+        String textToRender = "the quick brown fox jumps over the lazy dog 1234567890";
+
+        HashMap<Character, float[]> c = FontMaps.getDefaultCharacterMap(imageWidth, imageHeight);
+
+        text = new InstancedModel[textToRender.length()];
+
+        UITextBaker.bakeText(textToRender, text, tex, c, 1, -800, 375, 25, 25);
+    }
+
+    public static void render() {
+        //renderModel.getRectangle().setX(renderModel.getRectangle().getX() + 1);
+        //renderModel.updateVertices();
+        //model2.updateVertices();
+
+        //worldMatrixMat.translate(-3, 0, 0);
+        //worldMatrixMat.get(worldMatrix);
+
+        for (InstancedModel t : text) {
+            FontRenderer.renderModel(t);
+        }
+
+        Renderer.renderModel(renderModel);
+        Renderer.renderModel(model2);
+
+        Renderer.bufferToScreen(worldMatrix);
+        FontRenderer.bufferToScreen(worldMatrix);
+    }
+
+    public static void update() {
+        Renderer.update();
+        FontRenderer.update();
+    }
+
+    public static void dispose() {
+        Renderer.dispose();
+        FontRenderer.dispose();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.buffers.mem.*;
+import engine.render.*;
+import engine.render.model2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.io.*;
+import java.nio.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+public class Main {
+    static Matrix4f worldMatrixMat;
+    static FloatBuffer worldMatrix;
+    static InstancedModel[] text;
+    static InstancedModel renderModel;
+    static InstancedModel model2;
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() throws IOException, ClassNotFoundException {
+        Renderer.initialize();
+
+        Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+        worldMatrix = BufferUtils.createFloatBuffer(16);
+
+        worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+        worldMatrixMat.get(worldMatrix);
+
+        renderModel = (InstancedModel) DiskEscape.loadFromDisk("resources/precompiled/renderModel.dmodel");
+
+        model2 = (InstancedModel) DiskEscape.loadFromDisk("resources/precompiled/model2.dmodel");
+
+        ImageResource resource = ResourceLoader.loadImageResource("resources/textures/fontthingal2.png");
+
+        int[] tex = GLResourceLoader.createTextureResource(resource);
+
+        renderModel.setTexture(tex);
+
+        model2.setTexture(tex);
+
+        //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+
+        text = (InstancedModel[]) DiskEscape.loadFromDisk("resources/precompiled/font.dfont");
+    }
+
+    public static void render() {
+        //renderModel.getRectangle().setX(renderModel.getRectangle().getX() + 1);
+        //renderModel.updateVertices();
+        //model2.updateVertices();
+
+        //worldMatrixMat.translate(-3, 0, 0);
+        //worldMatrixMat.get(worldMatrix);
+
+        for (InstancedModel t : text) {
+            Renderer.renderModel(t);
+        }
+
+        Renderer.renderModel(renderModel);
+        Renderer.renderModel(model2);
+
+        Renderer.bufferToScreen(worldMatrix);
+    }
+
+    public static void update() {
+        Renderer.update();
+    }
+
+    public static void dispose() {
+        Renderer.dispose();
+    }
+}
+package game;
+
+import engine.render.*;
+import engine.render.platform.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() {
+        BGFXRenderer.initialize(1600, 800);
+    }
+
+    public static void render() {
+        BGFXRenderer.render(1600, 800);
+    }
+
+    public static void update() {
+        BGFXRenderer.update();
+    }
+
+    public static void dispose() {
+        BGFXRenderer.dispose();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.buffers.disk.DiskEscape;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.graphics2d.*;
+import engine.render.ui2d.*;
+import org.joml.*;
+import org.lwjgl.*;
+
+import java.io.IOException;
+import java.nio.*;
+import java.util.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+public class Main {
+    static Matrix4f worldMatrixMat;
+    static FloatBuffer worldMatrix;
+    static InstancedModel[] text;
+    static InstancedModel model;
+    static InstancedModel model2;
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() throws Exception {
+        Renderer.initialize();
+
+        Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+        worldMatrix = BufferUtils.createFloatBuffer(16);
+
+        worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+        worldMatrixMat.get(worldMatrix);
+
+        model = (InstancedModel) DiskEscape.loadFromDisk("resources/precompiled/model.dmodel");
+
+        model2 = (InstancedModel) DiskEscape.loadFromDisk("resources/precompiled/model2.dmodel");
+
+        ImageResource resource = ResourceLoader.loadImageResource("resources/textures/fontthingal2.png");
+
+        int[] tex = GLResourceLoader.createTextureResource(resource);
+
+        model.setTexture(tex);
+
+        model2.setTexture(tex);
+
+        //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+
+        text = (InstancedModel[]) DiskEscape.loadFromDisk("resources/precompiled/font.dfont");
+    }
+
+    public static void render() {
+        //model.getRectangle().setX(model.getRectangle().getX() + 1);
+        //model.updateVertices();
+        //model2.updateVertices();
+
+        //worldMatrixMat.translate(-3, 0, 0);
+        //worldMatrixMat.get(worldMatrix);
+
+        for (InstancedModel t : text) {
+            Renderer.renderModel(t);
+        }
+
+        Renderer.renderModel(model);
+        Renderer.renderModel(model2);
+
+        Renderer.bufferToScreen(worldMatrix);
+    }
+
+    public static void update() {
+        Renderer.update();
+    }
+
+    public static void dispose() {
+        Renderer.dispose();
+    }
+}
+package game;
+
+import engine.logic.buffers.loader.*;
+import engine.logic.systems.*;
+import engine.render.*;
+import engine.render.graphics3d.*;
+import org.joml.*;
+
+import static org.lwjgl.glfw.GLFW.*;
+
+public class Main {
+    static Model model;
+
+    public static void main(String[] args) throws Exception {
+        Window.initialize();
+        initialize();
+
+        while (!glfwWindowShouldClose(Window.getWindow())) {
+            Window.beginWindow();
+
+            Window.update();
+            update();
+
+            Window.render();
+            render();
+
+            Window.stopWindow();
+        }
+
+        dispose();
+        Window.dispose();
+    }
+
+    public static void initialize() throws Exception {
+        Renderer3D.initialize();
+
+        model = new Model(ShapeProcessing.generateSpriteShape3D(new Vector3f(0,0,0), new Vector3f(1, 10, 1)),  new float[] {
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
+        }, new int[] {
+                0, 1, 3, 3, 1, 2,
+                8, 10, 11, 9, 8, 11,
+                12, 13, 7, 5, 12, 7,
+                14, 15, 6, 4, 14, 6,
+                16, 18, 19, 17, 16, 19,
+                4, 6, 7, 5, 4, 7
+        }, GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/tex.png")));
+    }
+
+    public static void render() throws Exception {
+        Renderer3D.renderModel(model);
+        Renderer3D.bufferToScreen();
+    }
+
+    public static void update() throws Exception {
+        Renderer3D.update();
+    }
+
+    public static void dispose() throws Exception {
+        Renderer3D.dispose();
+    }
+}
+
+/*
+0.0f, 0.0f,
+0.0f, 0.5f,
+0.5f, 0.5f,
+0.5f, 0.0f,
+0.0f, 0.0f,
+0.5f, 0.0f,
+0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
+ */
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.mem.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.graphics2d.*;
+ import engine.render.graphics2d.particles2d.Particle;
+ import engine.render.graphics2d.particles2d.ParticleBuffer;
+ import engine.render.graphics2d.particles2d.ParticleManager;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.nio.*;
+ import java.util.Arrays;
+
+ import static org.lwjgl.glfw.GLFW.*;
+
+ public class Main {
+     static Matrix4f worldMatrixMat;
+     static FloatBuffer worldMatrix;
+     static InstancedModel model, model2, model3, backgroundModel;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void initialize() throws Exception {
+         Dyson.initializeDyson();
+
+         Renderer.initialize();
+
+         ParticleManager.initialize();
+
+         KeyBook.setMemoryTrackMul(1);
+         KeyBook.allocBuffers();
+
+         KeyMemory.createVault();
+
+         Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+         worldMatrix = BufferUtils.createFloatBuffer(16);
+
+         worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+         worldMatrixMat.get(worldMatrix);
+
+         model = new InstancedModel(new Rectangle(-300, -50, 100, 100));
+         model.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model.getVertices()[2] = 0;
+         model.getVertices()[5] = 0;
+         model.getVertices()[8] = 0;
+         model.getVertices()[11] = 0;
+
+         model2 = new InstancedModel(new Rectangle(0, -50, 100, 100));
+         model2.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model2.getVertices()[2] = 1;
+         model2.getVertices()[5] = 1;
+         model2.getVertices()[8] = 1;
+         model2.getVertices()[11] = 1;
+
+         model3 = new InstancedModel(new Rectangle(600, 200, 200, 200));
+         model3.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model3.getVertices()[2] = 2;
+         model3.getVertices()[5] = 2;
+         model3.getVertices()[8] = 2;
+         model3.getVertices()[11] = 2;
+
+         ImageResource resource = ResourceLoader.loadImageResource("resources/textures/tex.png");
+
+         int[] tex = GLResourceLoader.createTextureResource(resource);
+
+         ImageResource sunTextureResource = ResourceLoader.loadImageResource("resources/textures/sun.png");
+
+         int[] sunTexture = GLResourceLoader.createTextureResource(sunTextureResource);
+
+         model.setTexture(tex);
+
+         model2.setTexture(tex);
+
+         model3.setTexture(sunTexture);
+
+         System.out.println(Arrays.toString(sunTexture));
+
+         Particle particle = new Particle(new Rectangle(0, 0, 50, 50), sunTexture, 2,
+                 new ParticleBuffer(100, new int[] {
+                         0, 10
+                 })
+         );
+         ParticleManager.getParticles()[0] = particle;
+
+         //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+     }
+
+     public static void render() {
+         //model.getRectangle().setX(model.getRectangle().getX() + 1);
+         //model.updateVertices();
+         //model2.updateVertices();
+
+         //worldMatrixMat.translate(-3, 0, 0);
+         //worldMatrixMat.rotate(90, 1, 0, 0);
+         //worldMatrixMat.get(worldMatrix);
+
+         //Renderer.getLightPositionArray()[0] += 200f*5;
+         //System.out.println(Arrays.toString(Renderer.getLightPositionArray()));
+
+         Renderer.renderModel(model);
+         Renderer.renderModel(model2);
+         Renderer.renderModel(model3);
+         Renderer.renderModels(ParticleManager.getParticles());
+         //Renderer.renderModel(backgroundModel);
+
+         ParticleManager.render();
+         Renderer.bufferToScreen(worldMatrix);
+
+     }
+
+     public static void update() {
+         ParticleManager.update(1600, 800);
+         Renderer.update();
+     }
+
+     public static void dispose() {
+         ParticleManager.dispose();
+         Renderer.dispose();
+     }
+ }
+ package game;
+
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.manage.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.graphics3d.*;
+ import engine.render.graphics3d.advancedmodels.*;
+ import engine.render.graphics3d.scene3d.*;
+ import org.joml.*;
+
+ import java.io.*;
+ import java.lang.Math;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+ import static org.lwjgl.opengl.GL45.*;
+
+ public class Main {
+     static Shader shader;
+     static Camera camera;
+     static Transform transform;
+
+     static float[] vertices, texturecoordinates, vertices2, texturecoordinates2;
+     static int[] model, model2, indices, indices2;
+
+     static IModelRenderAdvanced iModelRender;
+
+     static float dx, dy, lmx, lmy, timer;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void initialize() throws Exception {
+         glEnable(GL_DEPTH_TEST);
+         glEnable(GL_CULL_FACE);
+         glCullFace(GL_BACK);
+
+         Scene3D.initialize();
+
+         Window.setBackgroundColor(new Vector4f(0, 0, 0, 1));
+
+         ModelLoader.Model myepicthing = ModelLoader.loadModel(new File("resources/models/my_epic_thing.obj"), 0);
+
+         vertices2 = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 10, 0), new Vector3f(0.5f, 0.5f, 0.5f));
+         //skyboxvertices = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(100, 100, 100));
+
+         texturecoordinates2 = new float[] {
+
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, 0.0f,
+
+                 0.0f, 0.0f,
+                 1.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 0.0f,
+                 1.0f, 1.0f,
+
+                 1.0f, 0.0f,
+                 1.0f, 0.0f,
+                 1.0f, 1.0f,
+                 1.0f, 1.0f,
+
+
+
+                 /*
+                 0, 0,
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                  */
+
+         };
+
+         indices2 = new int[] {
+                 0, 1, 3, 3, 1, 2,
+                 8, 10, 11, 9, 8, 11,
+                 12, 13, 7, 5, 12, 7,
+                 14, 15, 6, 4, 14, 6,
+                 16, 18, 19, 17, 16, 19,
+                 4, 6, 7, 5, 4, 7,
+         };
+
+         vertices = myepicthing.positions;
+         texturecoordinates = myepicthing.texCoords;
+         indices = myepicthing.indices;
+
+         iModelRender = new IModelRenderAdvanced() {
+             @Override
+             public void onVertexBufferBinded() {
+
+             }
+
+             @Override
+             public void onCoordinateBufferBinded() {
+
+             }
+
+             @Override
+             public void onElementBufferBinded() {
+
+             }
+
+             @Override
+             public void onNormalBufferBinded() {
+
+             }
+
+             @Override
+             public void onRenderBegin() {
+
+             }
+
+             @Override
+             public void onRenderStop() {
+
+             }
+         };
+
+         System.out.println(Arrays.toString(vertices));
+         System.out.println(vertices.length);
+
+         /*
+         float[] vertices_house = new float[houseModel.positions.size()];
+         int i = 0;
+
+         for (Float f : houseModel.positions) {
+             vertices_house[i] = f;
+             i += 1;
+         }
+
+         float[] tex_house = new float[houseModel.texCoords.size()];
+         i = 0;
+
+         for (Float f : houseModel.texCoords) {
+             tex_house[i] = f;
+             i += 1;
+         }
+
+         int[] elements_house = new int[houseModel.indices.size()];
+         i = 0;
+
+         for (Integer f : houseModel.indices) {
+             elements_house[i] = f;
+             i += 1;
+         }
+
+         System.out.println(Arrays.toString(vertices_house));
+
+         System.out.println(elements_house.length);
+
+         model = ModelUtilsAdvanced.createModel(new ModelParametersAdvanced(vertices, texturecoordinates, indices, new float[] {
+
+         }, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, iModelRender));
+         */
+
+         //skybox = GLResourceCreator.createModel(new ModelParameters(skyboxvertices, texturecoordinates, indices, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, null, iModelRender));
+
+         shader = new Shader(
+                 "#version 330\n" +
+                 "\n" +
+                 "layout (location = 0) in vec3 position;\n" +
+                 "layout (location = 1) in vec2 texture_coord;\n" +
+                 "layout (location = 2) in vec3 normals;\n" +
+                 "\n" +
+                 "uniform mat4 transformWorld;\n" +
+                 "uniform mat4 transformObject;\n" +
+                 "uniform mat4 cameraProjection;\n" +
+                 "uniform vec3 vertPos;\n" +
+                 "\n" +
+                 "out vec2 texture;\n" +
+                 "\n" +
+                 "out vec3 fragPos;\n" +
+                 "\n" +
+                 "void main() {\n" +
+                 "\ttexture = texture_coord;\n" +
+                 "\tfragPos = vertPos+position;//vec3(vertPos.x, vertPos.y, vertPos.z);\n" +
+                 "\tgl_Position = cameraProjection * transformWorld * transformObject * vec4(position, 1);\n" +
+                 "}\n" +
+                 "\n",
+                 "#version 330\n" +
+                         "\n" +
+                         "uniform sampler2D sampleTexture;\n" +
+                         "\n" +
+                         "out vec4 fragColor;\n" +
+                         "\n" +
+                         "in vec2 texture;\n" +
+                         "\n" +
+                         "in vec3 fragPos;\n" +
+                         "vec4 calucateLight(vec3 myColor, vec3 lightPos) {\n" +
+                         "	 myColor.x += 0.000000000000000000001;\n" +
+                         "    myColor.y += 0.000000000000000000001;\n" +
+                         "    myColor.z += 0.000000000000000000001;\n" +
+                         "\n" +
+                         "    vec3 thisPos = fragPos;\n" +
+                         "\n" +
+                         "    float lightdistanceX = abs(thisPos.x - lightPos.x);\n" +
+                         "    float lightdistanceY = abs(thisPos.y - lightPos.y);\n" +
+                         "    float lightdistanceZ = abs(thisPos.z - lightPos.z);\n" +
+                         "    float lightdistance = lightdistanceX + lightdistanceY + lightdistanceZ;\n" +
+                         "\n" +
+                         "    vec4 result = vec4(myColor.x/lightdistance,\n" +
+                         "                       myColor.y/lightdistance,\n" +
+                         "                       myColor.z/lightdistance, 1);\n" +
+                         "    return result;\n" +
+                         "}\n" +
+                         "\n" +
+                         "void main() {\n" +
+                         "\tvec3 lightposition = vec3(0, 0, 0);\n" +
+                         "\tvec3 distance = lightposition-fragPos;\n" +
+                         "\tvec4 texColor = texture2D(sampleTexture, texture);\n" +
+                         "\tvec4 light = calucateLight(vec3(texColor.x, texColor.y, texColor.z), lightposition);\n" +
+                         "\tvec4 customcolor = vec4((1/255) * 0, (1/255) * 255, (1/255) * 255, 1);\n" +
+                         "\tfragColor = texColor;//customcolor+light;//vec4(texColor.x*distance.x, texColor.y*distance.y, texColor.z*distance.z, 1); //vec4(1,1,0,1);\n" +
+                         "}\n" +
+                         "\n");
+         transform = new Transform();
+         camera = new Camera();
+         camera.setPerspective((float) Math.toRadians(70), 1600.0f / 800.0f, 0.01f, 1000.0f);
+         camera.setPosition(new Vector3f(2, 2, 5));
+         Scene3D.setViewCamera(camera);
+
+         int[] mytex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/my little texture.png"));
+         GLResourceManager.switchTextureSlot(0);
+         GLResourceManager.bindTexture(mytex);
+
+         Scene3D.getModels()[0] = new Model3D(shader, transform, iModelRender, vertices, texturecoordinates, indices, new float[] {});
+         model = Scene3D.getModels()[0].getModel();
+
+         Scene3D.getModels()[1] = new Model3D(shader, transform, iModelRender, vertices2, texturecoordinates2, indices2, new float[] {});
+         model2 = Scene3D.getModels()[1].getModel();
+
+     }
+
+     public static void render() throws Exception {
+         //transform.getRotation().rotateLocalY(0.1f);
+         Scene3D.render();
+
+         //transform.setPosition(new Vector3f(0, 0, 0));
+         //shader.setTransform(transform);
+         //ModelUtilsAdvanced.renderModel(model, 36, iModelRender);
+
+
+         //ModelUtilsAdvanced.renderModel(skybox, 36, iModelRender);
+     }
+
+     public static void update() throws Exception {
+         Mouse.inputMousePosition(Window.getWindow());
+
+         dx = Mouse.MOUSE_POSITION.x-lmx;
+         dy = Mouse.MOUSE_POSITION.y-lmy;
+
+         Scene3D.update();
+
+
+         float moveX = (float) -Math.sin(Math.toRadians(camera.getRotation().y)) * 3f;
+         float moveZ = (float) Math.cos(Math.toRadians(camera.getRotation().y)) * 0.05f;
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             camera.getPosition().x -= moveX;
+             camera.getPosition().z -= moveZ;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camera.getPosition().x += moveX;
+             camera.getPosition().z += moveZ;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camera.getPosition().x -= moveZ;
+             camera.getPosition().z += moveX;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camera.getPosition().x += moveZ;
+             camera.getPosition().z -= moveX;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+             camera.getPosition().y += 0.1f;
+         }
+
+         /*
+         float offsetX = 0, offsetY = 0, offsetZ = 0;
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             offsetZ = -1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             offsetZ = 1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             offsetX = -1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             offsetX = 1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+             offsetY = -1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+             offsetY = -1;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+             offsetY = 1;
+         }
+
+         if ( offsetZ != 0 ) {
+             camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ) * 0.05f;
+             camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ) * 0.05f;
+         }
+         if ( offsetX != 0) {
+             camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX) * 0.05f;
+             camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX) * 0.05f;
+         }
+         camera.getPosition().y += offsetY;
+
+          */
+
+         //camera.getRotation().rotateAxis(dy*0.01f, new Vector3f(1, 0, 0));
+         //camera.getRotation().rotateAxis(dx*0.01f, new Vector3f(0, 1, 0));
+
+         float lookX = dx * 1f * Window.getDeltaTime();
+         float lookY = dy * 1f * Window.getDeltaTime();
+
+         double fps = Math.floor(1.0f / Window.getDeltaTime());
+         timer += 1;
+
+         if (timer >= fps) {
+             System.out.println("Framerate: " + fps);
+             timer = 0;
+         }
+
+         camera.getRotation().x += lookY;
+         camera.getRotation().y += lookX;
+
+         //System.out.println(camera.getRotation().z);
+         //camera.getRotation().z = 0;
+         //camera.getRotation().w = 0;
+
+         lmx = Mouse.MOUSE_POSITION.x;
+         lmy = Mouse.MOUSE_POSITION.y;
+         Window.lockCursor();
+
+
+     }
+
+     public static void dispose() throws Exception {
+         //mesh.destroy();
+         Scene3D.dispose();
+         ModelUtilsAdvanced.disposeModel(model);
+         shader.destroy();
+     }
+ }
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.manage.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.ui2d.*;
+ import engine.render.graphics2d.*;
+ import engine.render.graphics3d.*;
+ import engine.render.graphics3d.advancedmodels.*;
+ import engine.render.graphics3d.scene3d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.io.*;
+ import java.lang.Math;
+ import java.nio.*;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+ import static org.lwjgl.opengl.GL45.*;
+
+ public class Main {
+     static Shader shader;
+     static Camera camera;
+     static Transform transform, transform2;
+
+     static float[] vertices, texturecoordinates, vertices2, texturecoordinates2;
+     static int[] model, model2, indices, indices2, myFramebuffer, fontTex;
+
+     static IModelRenderAdvanced iModelRender;
+
+     static float dx, dy, lmx, lmy, timer;
+
+     static FloatBuffer matrix;
+
+     static InstancedModel[] text;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void walkForward(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void walkBackwards(float distance) {
+         camera.getPosition().x += distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z -= distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void strafeLeft(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y - 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y - 90));
+     }
+
+     public static void strafeRight(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y + 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y + 90));
+     }
+
+     public static void initialize() throws Exception {
+         glEnable(GL_DEPTH_TEST);
+         glEnable(GL_CULL_FACE);
+         glCullFace(GL_BACK);
+
+         Dyson.initializeDyson();
+         Scene3D.initialize();
+         Renderer.initialize();
+
+         Window.setBackgroundColor(new Vector4f(0, 0, 0, 1));
+
+         ModelLoader.Model myepicthing = ModelLoader.loadModel(new File("resources/models/my_epic_thing.obj"), 0);
+
+         vertices2 = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f));
+         //skyboxvertices = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(100, 100, 100));
+
+         texturecoordinates2 = new float[] {
+
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, 0.0f,
+
+                 0.0f, 0.0f,
+                 1.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 0.0f,
+                 1.0f, 1.0f,
+
+                 1.0f, 0.0f,
+                 1.0f, 0.0f,
+                 1.0f, 1.0f,
+                 1.0f, 1.0f,
+
+
+
+                 /*
+                 0, 0,
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                  */
+
+         };
+
+         indices2 = new int[] {
+                 0, 1, 3, 3, 1, 2,
+                 8, 10, 11, 9, 8, 11,
+                 12, 13, 7, 5, 12, 7,
+                 14, 15, 6, 4, 14, 6,
+                 16, 18, 19, 17, 16, 19,
+                 4, 6, 7, 5, 4, 7,
+         };
+
+         vertices = vertices2;//myepicthing.positions;
+         texturecoordinates = texturecoordinates2;//myepicthing.texCoords;
+         indices = indices2;//myepicthing.indices;
+
+         iModelRender = new IModelRenderAdvanced() {
+             @Override
+             public void onVertexBufferBinded() {
+
+             }
+
+             @Override
+             public void onCoordinateBufferBinded() {
+
+             }
+
+             @Override
+             public void onElementBufferBinded() {
+
+             }
+
+             @Override
+             public void onNormalBufferBinded() {
+
+             }
+
+             @Override
+             public void onRenderBegin() {
+
+             }
+
+             @Override
+             public void onRenderStop() {
+
+             }
+         };
+
+         System.out.println(Arrays.toString(vertices));
+         System.out.println(vertices.length);
+
+          /*
+          float[] vertices_house = new float[houseModel.positions.size()];
+          int i = 0;
+
+          for (Float f : houseModel.positions) {
+              vertices_house[i] = f;
+              i += 1;
+          }
+
+          float[] tex_house = new float[houseModel.texCoords.size()];
+          i = 0;
+
+          for (Float f : houseModel.texCoords) {
+              tex_house[i] = f;
+              i += 1;
+          }
+
+          int[] elements_house = new int[houseModel.indices.size()];
+          i = 0;
+
+          for (Integer f : houseModel.indices) {
+              elements_house[i] = f;
+              i += 1;
+          }
+
+          System.out.println(Arrays.toString(vertices_house));
+
+          System.out.println(elements_house.length);
+
+          model = ModelUtilsAdvanced.createModel(new ModelParametersAdvanced(vertices, texturecoordinates, indices, new float[] {
+
+          }, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, iModelRender));
+          */
+
+         //skybox = GLResourceCreator.createModel(new ModelParameters(skyboxvertices, texturecoordinates, indices, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, null, iModelRender));
+
+         matrix = BufferUtils.createFloatBuffer(16);
+         new Matrix4f().scale((0.01f/1.8f/4.4f) * 100f, (0.01f/4f) * 100f, 0).get(matrix);
+
+         shader = new Shader(
+                 "#version 330\n" +
+                         "\n" +
+                         "layout (location = 0) in vec3 position;\n" +
+                         "layout (location = 1) in vec2 texture_coord;\n" +
+                         "layout (location = 2) in vec3 normals;\n" +
+                         "\n" +
+                         "uniform mat4 transformWorld;\n" +
+                         "uniform mat4 transformObject;\n" +
+                         "uniform mat4 cameraProjection;\n" +
+                         "uniform vec3 vertPos;\n" +
+                         "\n" +
+                         "out vec2 texture;\n" +
+                         "\n" +
+                         "out vec3 fragPos;\n" +
+                         "\n" +
+                         "void main() {\n" +
+                         "\ttexture = texture_coord;\n" +
+                         "\tfragPos = vertPos+position;//vec3(vertPos.x, vertPos.y, vertPos.z);\n" +
+                         "\tgl_Position = cameraProjection * transformWorld * transformObject * vec4(position, 1);\n" +
+                         "}\n" +
+                         "\n",
+                 "#version 330\n" +
+                         "\n" +
+                         "uniform sampler2D sampleTexture;\n" +
+                         "\n" +
+                         "out vec4 fragColor;\n" +
+                         "\n" +
+                         "in vec2 texture;\n" +
+                         "\n" +
+                         "in vec3 fragPos;\n" +
+                         "vec4 calucateLight(vec3 myColor, vec3 lightPos) {\n" +
+                         "	 myColor.x += 0.000000000000000000001;\n" +
+                         "    myColor.y += 0.000000000000000000001;\n" +
+                         "    myColor.z += 0.000000000000000000001;\n" +
+                         "\n" +
+                         "    vec3 thisPos = fragPos;\n" +
+                         "\n" +
+                         "    float lightdistanceX = abs(thisPos.x - lightPos.x);\n" +
+                         "    float lightdistanceY = abs(thisPos.y - lightPos.y);\n" +
+                         "    float lightdistanceZ = abs(thisPos.z - lightPos.z);\n" +
+                         "    float lightdistance = lightdistanceX + lightdistanceY + lightdistanceZ;\n" +
+                         "\n" +
+                         "    vec4 result = vec4(myColor.x/lightdistance,\n" +
+                         "                       myColor.y/lightdistance,\n" +
+                         "                       myColor.z/lightdistance, 1);\n" +
+                         "    return result;\n" +
+                         "}\n" +
+                         "\n" +
+                         "void main() {\n" +
+                         "\tvec3 lightposition = vec3(0, 0, 0);\n" +
+                         "\tvec3 distance = lightposition-fragPos;\n" +
+                         "\tvec4 texColor = texture2D(sampleTexture, texture);\n" +
+                         "\tvec4 light = calucateLight(vec3(texColor.x, texColor.y, texColor.z), lightposition);\n" +
+                         "\tvec4 customcolor = vec4((1/255) * 0, (1/255) * 255, (1/255) * 255, 1);\n" +
+                         "\tfragColor = texColor;//customcolor+light;//vec4(texColor.x*distance.x, texColor.y*distance.y, texColor.z*distance.z, 1); //vec4(1,1,0,1);\n" +
+                         "}\n" +
+                         "\n");
+         transform = new Transform();
+         camera = new Camera();
+         camera.setPerspective((float) Math.toRadians(70), 1600.0f / 800.0f, 0.01f, 1000.0f);
+         camera.setPosition(new Vector3f(0, 0, 0));
+         camera.setRotation(new Vector3f(0, 1.57f, 0));
+         Scene3D.setViewCamera(camera);
+
+         transform.setPosition(new Vector3f(-2, 0, 0));
+
+         Scene3D.getModels()[0] = new Model3D(shader, transform, iModelRender, vertices, texturecoordinates, indices, new float[] {});
+         model = Scene3D.getModels()[0].getModel();
+
+         transform2 = new Transform();
+         transform2.setPosition(new Vector3f(2, 0, 0));
+
+         Scene3D.getModels()[1] = new Model3D(shader, transform2, iModelRender, vertices2, texturecoordinates2, indices2, new float[] {});
+         model2 = Scene3D.getModels()[1].getModel();
+
+         fontTex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/fontthingal2.png"));
+
+         int imageWidth = 208;
+         int imageHeight = 48;
+
+         String textToRender = "the quick brown fox jumps over the lazy dog 1234567890";
+
+         HashMap<Character, float[]> c = FontMaps.getDefaultCharacterMap(imageWidth, imageHeight);
+
+         text = new InstancedModel[textToRender.length()];
+
+         UITextBaker.bakeText(textToRender, text, fontTex, c, 1, -800, 375, 25, 25);
+
+         int[] mytex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/my little texture.png"));
+         GLResourceManager.switchTextureSlot(0);
+         GLResourceManager.bindTexture(mytex);
+     }
+
+     public static void render() throws Exception {
+         //transform.getRotation().rotateLocalY(0.1f);
+
+         //transform.setPosition(new Vector3f(0, 0, 0));
+         //shader.setTransform(transform);
+         //ModelUtilsAdvanced.renderModel(model, 36, iModelRender);
+
+
+         //ModelUtilsAdvanced.renderModel(skybox, 36, iModelRender);
+
+         //for (InstancedModel model : text) {
+             //Renderer.renderModel(model);
+         //}
+
+         //Renderer.bufferToScreen(matrix);
+         Scene3D.render();
+     }
+
+     public static void update() throws Exception {
+         Mouse.inputMousePosition(Window.getWindow());
+
+         dx = Mouse.MOUSE_POSITION.x-lmx;
+         dy = Mouse.MOUSE_POSITION.y-lmy;
+
+         Renderer.update();
+         Scene3D.update();
+
+         float moveX = (float) -Math.sin(Math.toRadians((camera.getRotation().y))) * 3f;
+         float moveZ = (float) Math.cos(Math.toRadians((camera.getRotation().y))) * 0.05f;
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             //camera.getPosition().x -= moveX;
+             //camera.getPosition().z -= moveZ;
+             walkForward(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camera.getPosition().x += moveX;
+             camera.getPosition().z += moveZ;
+             walkBackwards(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camera.getPosition().x -= moveZ;
+             camera.getPosition().z += moveX;
+             strafeLeft(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camera.getPosition().x += moveZ;
+             camera.getPosition().z -= moveX;
+             strafeRight(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+             camera.getPosition().y += 0.1f;
+         }
+
+          /*
+          float offsetX = 0, offsetY = 0, offsetZ = 0;
+
+          if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+              offsetZ = -1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+              offsetZ = 1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+              offsetX = -1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+              offsetX = 1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+              offsetY = -1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+              offsetY = -1;
+          }
+
+          if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+              offsetY = 1;
+          }
+
+          if ( offsetZ != 0 ) {
+              camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ) * 0.05f;
+              camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ) * 0.05f;
+          }
+          if ( offsetX != 0) {
+              camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX) * 0.05f;
+              camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX) * 0.05f;
+          }
+          camera.getPosition().y += offsetY;
+
+           */
+
+         //camera.getRotation().rotateAxis(dy*0.01f, new Vector3f(1, 0, 0));
+         //camera.getRotation().rotateAxis(dx*0.01f, new Vector3f(0, 1, 0));
+
+         float lookX = dx * 0.5f * Window.getDeltaTime();
+         float lookY = dy * 0.5f * Window.getDeltaTime();
+
+         double fps = Math.floor(1.0f / Window.getDeltaTime());
+         timer += 1;
+
+         if (timer >= 100) {
+
+             System.out.println("Debug Information: \nCamera X Rotation: "+camera.getRotation().x+"\nCamera Y Rotation: "+camera.getRotation().y+"\nCamera Move X: "+moveX+"\nCamera Move Z: "+moveZ);
+
+             System.out.println("FPS: " + fps);
+             timer = 0;
+         }
+
+         camera.getRotation().x += lookY;
+         camera.getRotation().y += lookX;
+
+         //System.out.println(camera.getRotation().z);
+         //camera.getRotation().z = 0;
+         //camera.getRotation().w = 0;
+
+         lmx = Mouse.MOUSE_POSITION.x;
+         lmy = Mouse.MOUSE_POSITION.y;
+         Window.lockCursor();
+
+
+     }
+
+     public static void dispose() throws Exception {
+         //mesh.destroy();
+         Scene3D.dispose();
+         Renderer.dispose();
+         ModelUtilsAdvanced.disposeModel(model);
+         shader.destroy();
+     }
+ }
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.logic.systems.world.*;
+ import engine.render.*;
+ import engine.render.graphics2d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.nio.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+
+ public class Main {
+     static Matrix4f worldMatrixMat;
+     static FloatBuffer worldMatrix;
+     static InstancedModel model, ground, cover, sun;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void initialize() throws Exception {
+         Dyson.initializeDyson();
+
+         Renderer.initialize();
+
+         //ParticleManager.initialize();
+
+         Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+
+         worldMatrix = BufferUtils.createFloatBuffer(16);
+
+         worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+         worldMatrixMat.get(worldMatrix);
+
+         model = new InstancedModel(new Rectangle(-300, -50, 100, 100));
+         model.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model.getVertices()[2] = 0;
+         model.getVertices()[5] = 0;
+         model.getVertices()[8] = 0;
+         model.getVertices()[11] = 0;
+
+         ground = new InstancedModel(new Rectangle(-800, -400, 1600, 350));
+         ground.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         ground.getVertices()[2] = 1;
+         ground.getVertices()[5] = 1;
+         ground.getVertices()[8] = 1;
+         ground.getVertices()[11] = 1;
+
+         cover = new InstancedModel(new Rectangle(-300, 200, 1600, 350));
+         cover.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         cover.getVertices()[2] = 2;
+         cover.getVertices()[5] = 2;
+         cover.getVertices()[8] = 2;
+         cover.getVertices()[11] = 2;
+
+         sun = new InstancedModel(new Rectangle(600, 200, 200, 200));
+         sun.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         sun.getVertices()[2] = 3;
+         sun.getVertices()[5] = 3;
+         sun.getVertices()[8] = 3;
+         sun.getVertices()[11] = 3;
+
+         ImageResource resource = ResourceLoader.loadImageResource("resources/textures/tex.png");
+
+         int[] tex = GLResourceLoader.createTextureResource(resource);
+
+         ImageResource sunTextureResource = ResourceLoader.loadImageResource("resources/textures/sun.png");
+
+         int[] sunTexture = GLResourceLoader.createTextureResource(sunTextureResource);
+
+         ImageResource groundTexResource = ResourceLoader.loadImageResource("resources/textures/ground.png");
+
+         int[] groundTex = GLResourceLoader.createTextureResource(groundTexResource);
+
+         model.setTexture(tex);
+
+         ground.setTexture(groundTex);
+         cover.setTexture(groundTex);
+
+         sun.setTexture(sunTexture);
+
+         //Particle particle = new Particle(new Rectangle(0, 0, 50, 50), sunTexture, 2,
+         //        new ParticleBuffer(100, new int[] {
+         //                0, 10
+         //        })
+         //);
+         //ParticleManager.getParticles()[0] = particle;
+
+         //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+     }
+
+     public static void render() {
+         //model.getRectangle().setX(model.getRectangle().getX() + 1);
+         //model.updateVertices();
+         //model2.updateVertices();
+
+         //worldMatrixMat.translate(-3, 0, 0);
+         //worldMatrixMat.rotate(90, 1, 0, 0);
+         //worldMatrixMat.get(worldMatrix);
+
+         //Renderer.getLightPositionArray()[0] += 200f*5;
+         //System.out.println(Arrays.toString(Renderer.getLightPositionArray()));
+
+         Renderer.renderModel(model);
+         Renderer.renderModel(ground);
+         Renderer.renderModel(cover);
+         Renderer.renderModel(sun);
+         //Renderer.renderModels(ParticleManager.getParticles());
+         //Renderer.renderModel(backgroundModel);
+
+         //ParticleManager.render();
+         Renderer.bufferToScreen(worldMatrix);
+
+     }
+
+     public static void update() {
+
+
+         Renderer.update();
+     }
+
+     public static void dispose() {
+         //ParticleManager.dispose();
+         Renderer.dispose();
+     }
+ }
+ ---
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.manage.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.ui2d.*;
+ import engine.render.graphics2d.*;
+ import engine.render.graphics3d.*;
+ import engine.render.graphics3d.advancedmodels.*;
+ import engine.render.graphics3d.scene3d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.io.*;
+ import java.lang.Math;
+ import java.nio.*;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+ import static org.lwjgl.opengl.GL45.*;
+
+ public class Main {
+     static Shader shader;
+     static Camera camera;
+     static Transform transform, transform2;
+
+     static float[] vertices, texturecoordinates, vertices2, texturecoordinates2;
+     static int[] model, model2, indices, indices2, myFramebuffer, fontTex;
+
+     static IModelRenderAdvanced iModelRender;
+
+     static float dx, dy, lmx, lmy, timer;
+
+     static FloatBuffer matrix;
+
+     static InstancedModel[] text;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void walkForward(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void walkBackwards(float distance) {
+         camera.getPosition().x += distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z -= distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void strafeLeft(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y - 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y - 90));
+     }
+
+     public static void strafeRight(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y + 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y + 90));
+     }
+
+     public static void initialize() throws Exception {
+         glEnable(GL_DEPTH_TEST);
+         //glEnable(GL_CULL_FACE);
+         //glCullFace(GL_BACK);
+
+         Dyson.initializeDyson();
+         Scene3D.initialize();
+         Renderer.initialize();
+
+         Window.setBackgroundColor(new Vector4f(0, 0, 0, 1));
+
+         //ModelLoader.Model myepicthing = ModelLoader.loadModel(new File("resources/models/cube.obj"), 0);
+
+         vertices2 = new float[] {
+                 -0.5f, 0.5f, 0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 -0.5f, 0.5f, -0.5f,
+                 0.5f, 0.5f, -0.5f,
+                 -0.5f, -0.5f, -0.5f,
+                 0.5f, -0.5f, -0.5f,
+                 -0.5f, 0.5f, -0.5f,
+                 0.5f, 0.5f, -0.5f,
+                 -0.5f, 0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+                 -0.5f, 0.5f, 0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 -0.5f, -0.5f, -0.5f,
+                 0.5f, -0.5f, -0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+         };//ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f));
+         //skyboxvertices = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(100, 100, 100));
+
+         texturecoordinates2 = new float[] {
+
+                 /*
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, 0.0f,
+
+                  */
+
+                 0.0f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.5f, 0.0f,
+                 0.0f, 0.0f,
+                 0.5f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.0f, 1.0f,
+                 0.5f, 1.0f,
+                 0.0f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.0f,
+                 0.5f, 0.5f,
+                 0.5f, 0.0f,
+                 1.0f, 0.0f,
+                 0.5f, 0.5f,
+                 1.0f, 0.5f,
+
+                 /*
+                 0, 0,
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                  */
+
+         };
+
+         indices2 = new int[] {
+                 0, 1, 3, 3, 1, 2,
+                 8, 10, 11, 9, 8, 11,
+                 12, 13, 7, 5, 12, 7,
+                 14, 15, 6, 4, 14, 6,
+                 16, 18, 19, 17, 16, 19,
+                 4, 6, 7, 5, 4, 7,
+         };
+
+         vertices = vertices2;//myepicthing.positions;
+         texturecoordinates = texturecoordinates2;//myepicthing.texCoords;
+         indices = indices2;//myepicthing.indices;
+
+         iModelRender = new IModelRenderAdvanced() {
+             @Override
+             public void onVertexBufferBinded() {
+
+             }
+
+             @Override
+             public void onCoordinateBufferBinded() {
+
+             }
+
+             @Override
+             public void onElementBufferBinded() {
+
+             }
+
+             @Override
+             public void onNormalBufferBinded() {
+
+             }
+
+             @Override
+             public void onRenderBegin() {
+
+             }
+
+             @Override
+             public void onRenderStop() {
+
+             }
+         };
+
+         System.out.println(Arrays.toString(vertices));
+         System.out.println(vertices.length);
+
+           /*
+           float[] vertices_house = new float[houseModel.positions.size()];
+           int i = 0;
+
+           for (Float f : houseModel.positions) {
+               vertices_house[i] = f;
+               i += 1;
+           }
+
+           float[] tex_house = new float[houseModel.texCoords.size()];
+           i = 0;
+
+           for (Float f : houseModel.texCoords) {
+               tex_house[i] = f;
+               i += 1;
+           }
+
+           int[] elements_house = new int[houseModel.indices.size()];
+           i = 0;
+
+           for (Integer f : houseModel.indices) {
+               elements_house[i] = f;
+               i += 1;
+           }
+
+           System.out.println(Arrays.toString(vertices_house));
+
+           System.out.println(elements_house.length);
+
+           model = ModelUtilsAdvanced.createModel(new ModelParametersAdvanced(vertices, texturecoordinates, indices, new float[] {
+
+           }, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, iModelRender));
+           */
+
+         //skybox = GLResourceCreator.createModel(new ModelParameters(skyboxvertices, texturecoordinates, indices, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, null, iModelRender));
+
+         matrix = BufferUtils.createFloatBuffer(16);
+         new Matrix4f().scale((0.01f/1.8f/4.4f) * 100f, (0.01f/4f) * 100f, 0).get(matrix);
+
+         shader = new Shader(ResourceLoader.loadFile("resources/shaders/light3d.vs"),
+                             ResourceLoader.loadFile("resources/shaders/light3d.fs")
+         );
+         transform = new Transform();
+         camera = new Camera();
+         camera.setPerspective((float) Math.toRadians(70), 1600.0f / 800.0f, 0.01f, 1000.0f);
+         camera.setPosition(new Vector3f(0, 0, 0));
+         camera.setRotation(new Vector3f(0, 1.57f, 0));
+         Scene3D.setViewCamera(camera);
+
+         float[] normals = new float[100];
+         float[] normals1 = new float[100];
+         ModelUtilsAdvanced.generateModelNormals(normals, vertices, indices);
+         ModelUtilsAdvanced.generateModelNormals(normals1, vertices2, indices2);
+
+         transform.setPosition(new Vector3f(-2, 0, 0));
+
+         Scene3D.getModels()[0] = new Model3D(shader, transform, iModelRender, vertices, texturecoordinates, indices, normals);
+         model = Scene3D.getModels()[0].getModel();
+
+         transform2 = new Transform();
+         transform2.setPosition(new Vector3f(0, -2, 0));
+
+         Scene3D.getModels()[1] = new Model3D(shader, transform2, iModelRender, vertices2, texturecoordinates2, indices2, normals1);
+         model2 = Scene3D.getModels()[1].getModel();
+
+         fontTex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/fontthingal2.png"));
+
+         int imageWidth = 208;
+         int imageHeight = 48;
+
+         String textToRender = "the quick brown fox jumps over the lazy dog 1234567890";
+
+         HashMap<Character, float[]> c = FontMaps.getDefaultCharacterMap(imageWidth, imageHeight);
+
+         text = new InstancedModel[textToRender.length()];
+
+         UITextBaker.bakeText(textToRender, text, fontTex, c, 1, -800, 375, 25, 25);
+
+         int[] mytex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/my little texture.png"));
+         GLResourceManager.switchTextureSlot(0);
+         GLResourceManager.bindTexture(mytex);
+     }
+
+     public static void render() throws Exception {
+         //transform.getRotation().rotateLocalY(0.1f);
+
+         //transform.setPosition(new Vector3f(0, 0, 0));
+         //shader.setTransform(transform);
+         //ModelUtilsAdvanced.renderModel(model, 36, iModelRender);
+
+
+         //ModelUtilsAdvanced.renderModel(skybox, 36, iModelRender);
+
+         //for (InstancedModel model : text) {
+         //Renderer.renderModel(model);
+         //}
+
+         //Renderer.bufferToScreen(matrix);
+         Scene3D.render();
+     }
+
+     public static void update() throws Exception {
+         Mouse.inputMousePosition(Window.getWindow());
+
+         dx = Mouse.MOUSE_POSITION.x-lmx;
+         dy = Mouse.MOUSE_POSITION.y-lmy;
+
+         Renderer.update();
+         Scene3D.update();
+
+         float moveX = (float) -Math.sin(Math.toRadians((camera.getRotation().y))) * 3f;
+         float moveZ = (float) Math.cos(Math.toRadians((camera.getRotation().y))) * 0.05f;
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             camera.getPosition().x -= moveX;
+             camera.getPosition().z -= moveZ;
+             walkForward(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camera.getPosition().x += moveX;
+             camera.getPosition().z += moveZ;
+             walkBackwards(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camera.getPosition().x -= moveZ;
+             camera.getPosition().z += moveX;
+             strafeLeft(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camera.getPosition().x += moveZ;
+             camera.getPosition().z -= moveX;
+             strafeRight(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+             camera.getPosition().y += 0.1f;
+         }
+
+           /*
+           float offsetX = 0, offsetY = 0, offsetZ = 0;
+
+           if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+               offsetZ = -1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+               offsetZ = 1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+               offsetX = -1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+               offsetX = 1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+               offsetY = -1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+               offsetY = -1;
+           }
+
+           if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+               offsetY = 1;
+           }
+
+           if ( offsetZ != 0 ) {
+               camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ) * 0.05f;
+               camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ) * 0.05f;
+           }
+           if ( offsetX != 0) {
+               camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX) * 0.05f;
+               camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX) * 0.05f;
+           }
+           camera.getPosition().y += offsetY;
+
+            */
+
+         //camera.getRotation().rotateAxis(dy*0.01f, new Vector3f(1, 0, 0));
+         //camera.getRotation().rotateAxis(dx*0.01f, new Vector3f(0, 1, 0));
+
+         float lookX = dx * 0.5f * Window.getDeltaTime();
+         float lookY = dy * 0.5f * Window.getDeltaTime();
+
+         double fps = Math.floor(1.0f / Window.getDeltaTime());
+         timer += 1;
+
+         if (timer >= 100) {
+
+             //System.out.println("Debug Information: \nCamera X Rotation: "+camera.getRotation().x+"\nCamera Y Rotation: "+camera.getRotation().y+"\nCamera Move X: "+moveX+"\nCamera Move Z: "+moveZ);
+
+             System.out.println("FPS: " + fps);
+             timer = 0;
+         }
+
+         camera.getRotation().x += lookY;
+         camera.getRotation().y += lookX;
+
+         //System.out.println(camera.getRotation().z);
+         //camera.getRotation().z = 0;
+         //camera.getRotation().w = 0;
+
+         lmx = Mouse.MOUSE_POSITION.x;
+         lmy = Mouse.MOUSE_POSITION.y;
+         Window.lockCursor();
+
+
+     }
+
+     public static void dispose() throws Exception {
+         //mesh.destroy();
+         Scene3D.dispose();
+         Renderer.dispose();
+         ModelUtilsAdvanced.disposeModel(model);
+         shader.destroy();
+     }
+ }
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.logic.systems.tilemap.*;
+ import engine.logic.systems.world.*;
+ import engine.render.*;
+ import engine.render.graphics2d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.lang.Runtime;
+ import java.nio.*;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+
+ public class Main {
+     static Matrix4f worldMatrixMat;
+     static FloatBuffer worldMatrix;
+     static InstancedModel model, model2, ground, cover, sun;
+     static InstancedModel[] tilemapma;
+     static int camMoveX, camMoveY, camSpeed = 400, mSpeed = 20 / 4;
+     static Tilemap tilemap;
+
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void initialize() throws Exception {
+         Dyson.initializeDyson();
+
+         Renderer.initialize();
+
+         //ParticleManager.initialize();
+
+         //Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+         Vector2f defaultScale = new Vector2f(1f/(Window.getWindowFramebuffer()[3]/2f), 1f/(Window.getWindowFramebuffer()[4]/2f));
+
+         worldMatrix = BufferUtils.createFloatBuffer(16);
+
+         worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+         worldMatrixMat.get(worldMatrix);
+
+         model = new InstancedModel(new Rectangle(0, 0, 100, 100));
+         model.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model.getVertices()[2] = 0;
+         model.getVertices()[5] = 0;
+         model.getVertices()[8] = 0;
+         model.getVertices()[11] = 0;
+
+         model2 = new InstancedModel(new Rectangle(99, 0, 100, 100));
+         model2.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model2.getVertices()[2] = 1;
+         model2.getVertices()[5] = 1;
+         model2.getVertices()[8] = 1;
+         model2.getVertices()[11] = 1;
+
+         ground = new InstancedModel(new Rectangle(-800, -400, 1600, 350));
+         ground.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         ground.getVertices()[2] = 2;
+         ground.getVertices()[5] = 2;
+         ground.getVertices()[8] = 2;
+         ground.getVertices()[11] = 2;
+
+         cover = new InstancedModel(new Rectangle(-300, 200, 1600, 350));
+         cover.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         cover.getVertices()[2] = 3;
+         cover.getVertices()[5] = 3;
+         cover.getVertices()[8] = 3;
+         cover.getVertices()[11] = 3;
+
+         sun = new InstancedModel(new Rectangle(600, 200, 200, 200));
+         sun.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         sun.getVertices()[2] = 4;
+         sun.getVertices()[5] = 4;
+         sun.getVertices()[8] = 4;
+         sun.getVertices()[11] = 4;
+
+         ImageResource resource = ResourceLoader.loadImageResource("resources/textures/tex.png");
+
+         int[] tex = GLResourceLoader.createTextureResource(resource);
+
+         ImageResource sunTextureResource = ResourceLoader.loadImageResource("resources/textures/sun.png");
+
+         int[] sunTexture = GLResourceLoader.createTextureResource(sunTextureResource);
+
+         ImageResource groundTexResource = ResourceLoader.loadImageResource("resources/textures/ground.png");
+
+         int[] groundTex = GLResourceLoader.createTextureResource(groundTexResource);
+
+         ImageResource tilemapTexResource = ResourceLoader.loadImageResource("resources/textures/block_sheet.png");
+
+         int[] tilemapTex = GLResourceLoader.createTextureResource(tilemapTexResource);
+
+         model.setTexture(tex);
+         model2.setTexture(tex);
+
+         ground.setTexture(groundTex);
+         cover.setTexture(groundTex);
+
+         sun.setTexture(sunTexture);
+
+         SpritesheetSubImage sprite1;
+
+         int player_spawn_tile_id = 6;
+         int enemy_wall_tile_id = 7;
+         int enemy_spawn_tile_id = 8;
+
+         int[] exception_list = new int[3];
+         exception_list[0] = player_spawn_tile_id;
+         exception_list[1] = enemy_spawn_tile_id;
+         exception_list[2] = enemy_wall_tile_id;
+
+         tilemap = new Tilemap();
+
+         tilemap.initialize(64, 64);
+         tilemap.loadTilemap("resources/tilemaps/Game_Map3.csv");
+
+         HashMap<Integer, float[]> hmap = new HashMap<>();
+         //hmap.put(1, sprite1.generateTextureCoordinates(tilemapTexResource.getWidth().get(0), tilemapTexResource.getHeight().get(0)));
+         for (int i = 1; i < (tilemapTexResource.getWidth().get(0)/50); i++) {
+             sprite1 = new SpritesheetSubImage(new Rectangle(50 * i, 0, 50, 50));
+             hmap.put(i, sprite1.generateTextureCoordinates(tilemapTexResource.getWidth().get(0), tilemapTexResource.getHeight().get(0)));
+         }
+
+         tilemapma = tilemap.getTilemapAsModelArray(tilemapTex, hmap, exception_list, 300, 300, 16, 16, 5);
+         World.initialize();
+         //.applyForce("simpleforce", new Force(100, 500))
+         WorldObject object =  new WorldRectangle().initialize(0, 500, 100, 100, false);
+         Force myforce = new Force(0, 0);
+         System.out.println("f" + myforce.getForceX());
+         object.applyForce("MainForce", myforce);
+         World.addObject(object);
+         World.addObject(new WorldRectangle().initialize(0, -2000, 100, 100, true));
+
+         System.gc();
+         System.out.println("Meg used="+(Runtime.getRuntime().totalMemory()-
+                 Runtime.getRuntime().freeMemory())/(1000*1000)+"M");
+
+         //System.out.println(n o);
+         //Runtime.getRuntime().exec(n o);
+
+         //76.4 MB
+
+         //Particle particle = new Particle(new Rectangle(0, 0, 50, 50), sunTexture, 2,
+         //        new ParticleBuffer(100, new int[] {
+         //                0, 10
+         //        })
+         //);
+         //ParticleManager.getParticles()[0] = particle;
+
+         //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+     }
+
+     public static void render() {
+         //model.getRectangle().setX(model.getRectangle().getX() + 1);
+         //model.updateVertices();
+         //model2.updateVertices();
+         //worldMatrixMat.translate(-3, 0, 0);
+
+         //worldMatrixMat.get(worldMatrix);
+
+         Renderer.renderModel(model);
+         Renderer.renderModel(model2);
+         Renderer.renderModel(ground);
+         Renderer.renderModel(cover);
+         Renderer.renderModel(sun);
+         Renderer.renderModels(tilemapma, tilemap.getWidth() * tilemap.getHeight());
+         Renderer.renderModels(World.generateModelArray(model.getTexture(), new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         }, 0), 2);
+         //Renderer.getLightPositionArray()[0] += 200f*5;
+         //System.out.println(Arrays.toString(Renderer.getLightPositionArray()));
+         //Renderer.renderModels(ParticleManager.getParticles());
+         //Renderer.renderModel(backgroundModel);
+
+         //ParticleManager.render();
+         Renderer.bufferToScreen(worldMatrix);
+
+     }
+
+     public static void update() {
+
+         //System.out.println("Meg used="+(Runtime.getRuntime().totalMemory()-
+         //        Runtime.getRuntime().freeMemory())/(1000*1000)+"MB");
+
+         //System.out.println(Math.floor(1.0f / Window.getDeltaTime()));
+
+         World.update();
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             camMoveY -= camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(0, -camSpeed * Window.getDeltaTime(), 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camMoveY += camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(0, camSpeed * Window.getDeltaTime(), 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camMoveX += camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(camSpeed * Window.getDeltaTime(), 0, 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camMoveX -= camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(-camSpeed * Window.getDeltaTime(), 0, 0);
+         }
+
+         worldMatrixMat.get(worldMatrix);
+
+         Renderer.update();
+     }
+
+     public static void dispose() {
+         //ParticleManager.dispose();
+         Renderer.dispose();
+     }
+ }
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.buffers.manage.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.render.*;
+ import engine.render.ui2d.*;
+ import engine.render.graphics2d.*;
+ import engine.render.graphics3d.*;
+ import engine.render.graphics3d.advancedmodels.*;
+ import engine.render.graphics3d.scene3d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.io.*;
+ import java.lang.Math;
+ import java.nio.*;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+ import static org.lwjgl.opengl.GL45.*;
+
+ public class Main {
+     static Shader shader;
+     static Camera camera;
+     static Transform transform, transform2;
+
+     static float[] vertices, texturecoordinates, vertices2, texturecoordinates2;
+     static int[] model, model2, indices, indices2, myFramebuffer, fontTex;
+
+     static IModelRenderAdvanced iModelRender;
+
+     static float dx, dy, lmx, lmy, timer;
+
+     static FloatBuffer matrix;
+
+     static InstancedModel[] text;
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void walkForward(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void walkBackwards(float distance) {
+         camera.getPosition().x += distance * (float) Math.sin(Math.toRadians(camera.getRotation().y));
+         camera.getPosition().z -= distance * (float) Math.cos(Math.toRadians(camera.getRotation().y));
+     }
+
+     public static void strafeLeft(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y - 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y - 90));
+     }
+
+     public static void strafeRight(float distance) {
+         camera.getPosition().x -= distance * (float) Math.sin(Math.toRadians(camera.getRotation().y + 90));
+         camera.getPosition().z += distance * (float) Math.cos(Math.toRadians(camera.getRotation().y + 90));
+     }
+
+     public static void initialize() throws Exception {
+         glEnable(GL_DEPTH_TEST);
+         //glEnable(GL_CULL_FACE);
+         //glCullFace(GL_BACK);
+
+         Dyson.initializeDyson();
+         Scene3D.initialize();
+         Renderer.initialize();
+
+         Window.setBackgroundColor(new Vector4f(1, 1, 1, 1));
+
+         //ModelLoader.Model myepicthing = ModelLoader.loadModel(new File("resources/models/cube.obj"), 0);
+
+         vertices2 = new float[] {
+                 -0.5f, 0.5f, 0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 -0.5f, 0.5f, -0.5f,
+                 0.5f, 0.5f, -0.5f,
+                 -0.5f, -0.5f, -0.5f,
+                 0.5f, -0.5f, -0.5f,
+                 -0.5f, 0.5f, -0.5f,
+                 0.5f, 0.5f, -0.5f,
+                 -0.5f, 0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 0.5f, 0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+                 -0.5f, 0.5f, 0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 -0.5f, -0.5f, -0.5f,
+                 0.5f, -0.5f, -0.5f,
+                 -0.5f, -0.5f, 0.5f,
+                 0.5f, -0.5f, 0.5f,
+         };//ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f));
+         //skyboxvertices = ShapeProcessing.generateSpriteShape3D(new Vector3f(0, 0, 0), new Vector3f(100, 100, 100));
+
+         texturecoordinates2 = new float[] {
+
+                 /*
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, 0.0f,
+
+                  */
+
+                 0.0f, 0.0f,
+                 0.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, 0.0f,
+
+                 /*
+                 0.0f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.5f, 0.0f,
+                 0.0f, 0.0f,
+                 0.5f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.0f, 0.5f,
+                 0.5f, 0.5f,
+                 0.0f, 1.0f,
+                 0.5f, 1.0f,
+                 0.0f, 0.0f,
+                 0.0f, 0.5f,
+                 0.5f, 0.0f,
+                 0.5f, 0.5f,
+                 0.5f, 0.0f,
+                 1.0f, 0.0f,
+                 0.5f, 0.5f,
+                 1.0f, 0.5f,
+
+                  */
+
+                 /*
+                 0, 0,
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                  */
+
+         };
+
+         indices2 = new int[] {
+                 0, 1, 3, 3, 1, 2,
+                 8, 10, 11, 9, 8, 11,
+                 12, 13, 7, 5, 12, 7,
+                 14, 15, 6, 4, 14, 6,
+                 16, 18, 19, 17, 16, 19,
+                 4, 6, 7, 5, 4, 7,
+         };
+
+         vertices = vertices2;//myepicthing.positions;
+         texturecoordinates = texturecoordinates2;//myepicthing.texCoords;
+         indices = indices2;//myepicthing.indices;
+
+         iModelRender = new IModelRenderAdvanced() {
+             @Override
+             public void onVertexBufferBinded() {
+
+             }
+
+             @Override
+             public void onCoordinateBufferBinded() {
+
+             }
+
+             @Override
+             public void onElementBufferBinded() {
+
+             }
+
+             @Override
+             public void onNormalBufferBinded() {
+
+             }
+
+             @Override
+             public void onRenderBegin() {
+
+             }
+
+             @Override
+             public void onRenderStop() {
+
+             }
+         };
+
+         System.out.println(Arrays.toString(vertices));
+         System.out.println(vertices.length);
+
+            /*
+            float[] vertices_house = new float[houseModel.positions.size()];
+            int i = 0;
+
+            for (Float f : houseModel.positions) {
+                vertices_house[i] = f;
+                i += 1;
+            }
+
+            float[] tex_house = new float[houseModel.texCoords.size()];
+            i = 0;
+
+            for (Float f : houseModel.texCoords) {
+                tex_house[i] = f;
+                i += 1;
+            }
+
+            int[] elements_house = new int[houseModel.indices.size()];
+            i = 0;
+
+            for (Integer f : houseModel.indices) {
+                elements_house[i] = f;
+                i += 1;
+            }
+
+            System.out.println(Arrays.toString(vertices_house));
+
+            System.out.println(elements_house.length);
+
+            model = ModelUtilsAdvanced.createModel(new ModelParametersAdvanced(vertices, texturecoordinates, indices, new float[] {
+
+            }, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, iModelRender));
+            */
+
+         //skybox = GLResourceCreator.createModel(new ModelParameters(skyboxvertices, texturecoordinates, indices, GL_STATIC_DRAW, GL_STATIC_DRAW, GL_STATIC_DRAW, null, iModelRender));
+
+         matrix = BufferUtils.createFloatBuffer(16);
+         new Matrix4f().scale((0.01f/1.8f/4.4f) * 100f, (0.01f/4f) * 100f, 0).get(matrix);
+
+         shader = new Shader(ResourceLoader.loadFile("resources/shaders/basic3d.vs"),
+                 ResourceLoader.loadFile("resources/shaders/basic3d.fs")
+         );
+         transform = new Transform();
+         camera = new Camera();
+         camera.setPerspective((float) Math.toRadians(70), 1600.0f / 800.0f, 0.01f, 1000.0f);
+         camera.setPosition(new Vector3f(0, 0, 0));
+         camera.setRotation(new Vector3f(0, 0, 0));
+         Scene3D.setViewCamera(camera);
+
+         float[] normals = new float[100];
+         float[] normals1 = new float[100];
+         ModelUtilsAdvanced.generateModelNormals(normals, vertices, indices);
+         ModelUtilsAdvanced.generateModelNormals(normals1, vertices2, indices2);
+
+         transform.setPosition(new Vector3f(0, 0, -2));
+
+         Scene3D.getModels()[0] = new Model3D(shader, transform, iModelRender, vertices, texturecoordinates, indices, normals);
+         model = Scene3D.getModels()[0].getModel();
+
+         transform2 = new Transform();
+         transform2.setPosition(new Vector3f(0, -2, 0));
+
+         Scene3D.getModels()[1] = new Model3D(shader, transform2, iModelRender, vertices2, texturecoordinates2, indices2, normals1);
+         model2 = Scene3D.getModels()[1].getModel();
+
+         fontTex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/fontthingal2.png"));
+
+         int imageWidth = fontTex[1];
+         int imageHeight = fontTex[2];
+
+         String textToRender = "the quick brown fox jumps over the lazy dog 1234567890";
+
+         HashMap<Character, float[]> c = FontMaps.getDefaultCharacterMap(imageWidth, imageHeight);
+
+         text = new InstancedModel[textToRender.length()];
+
+         UITextBaker.bakeText(textToRender, text, fontTex, c, 1, -800, 375, 25, 25);
+
+         int[] mytex = GLResourceLoader.createTextureResource(ResourceLoader.loadImageResource("resources/textures/my little texture.png"));
+         GLResourceManager.switchTextureSlot(0);
+         GLResourceManager.bindTexture(mytex);
+     }
+
+     public static void render() throws Exception {
+         //transform.getRotation().rotateLocalY(0.1f);
+
+         //transform.setPosition(new Vector3f(0, 0, 0));
+         //shader.setTransform(transform);
+         //ModelUtilsAdvanced.renderModel(model, 36, iModelRender);
+
+
+         //ModelUtilsAdvanced.renderModel(skybox, 36, iModelRender);
+
+         //for (InstancedModel model : text) {
+         //Renderer.renderModel(model);
+         //}
+
+         Renderer.bufferToScreen(matrix);
+         Scene3D.render();
+     }
+
+     public static void update() throws Exception {
+         Mouse.inputMousePosition(Window.getWindow());
+
+         dx = Mouse.MOUSE_POSITION.x-lmx;
+         dy = Mouse.MOUSE_POSITION.y-lmy;
+
+         Renderer.update();
+         Scene3D.update();
+
+         /*
+         float moveX = (float) -Math.sin(Math.toRadians((camera.getRotation().y))) * 3f;
+         float moveZ = (float) Math.cos(Math.toRadians((camera.getRotation().y))) * 0.05f;
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             camera.getPosition().x -= moveX;
+             camera.getPosition().z -= moveZ;
+             walkForward(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camera.getPosition().x += moveX;
+             camera.getPosition().z += moveZ;
+             walkBackwards(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camera.getPosition().x -= moveZ;
+             camera.getPosition().z += moveX;
+             strafeLeft(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camera.getPosition().x += moveZ;
+             camera.getPosition().z -= moveX;
+             strafeRight(1f * Window.getDeltaTime());
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+             camera.getPosition().y -= 0.1f;
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+             camera.getPosition().y += 0.1f;
+         }
+
+            /*
+            float offsetX = 0, offsetY = 0, offsetZ = 0;
+
+            if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+                offsetZ = -1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+                offsetZ = 1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+                offsetX = -1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+                offsetX = 1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+                offsetY = -1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_RIGHT_SHIFT)) {
+                offsetY = -1;
+            }
+
+            if (Keyboard.isKeyDown(GLFW_KEY_SPACE)) {
+                offsetY = 1;
+            }
+
+            if ( offsetZ != 0 ) {
+                camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ) * 0.05f;
+                camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ) * 0.05f;
+            }
+            if ( offsetX != 0) {
+                camera.getPosition().x += ((float)Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX) * 0.05f;
+                camera.getPosition().z += ((float)Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX) * 0.05f;
+            }
+            camera.getPosition().y += offsetY;
+
+             */
+
+         //camera.getRotation().rotateAxis(dy*0.01f, new Vector3f(1, 0, 0));
+         //camera.getRotation().rotateAxis(dx*0.01f, new Vector3f(0, 1, 0));
+
+         float lookX = dx * 0.5f * Window.getDeltaTime();
+         float lookY = dy * 0.5f * Window.getDeltaTime();
+
+         double fps = Math.floor(1.0f / Window.getDeltaTime());
+         timer += 1;
+
+         if (timer >= 100) {
+
+             //System.out.println("Debug Information: \nCamera X Rotation: "+camera.getRotation().x+"\nCamera Y Rotation: "+camera.getRotation().y+"\nCamera Move X: "+moveX+"\nCamera Move Z: "+moveZ);
+
+             System.out.println("FPS: " + fps);
+             timer = 0;
+         }
+
+         camera.getRotation().x += lookY;
+         camera.getRotation().y += lookX;
+
+         //System.out.println(camera.getRotation().z);
+         //camera.getRotation().z = 0;
+         //camera.getRotation().w = 0;
+
+         lmx = Mouse.MOUSE_POSITION.x;
+         lmy = Mouse.MOUSE_POSITION.y;
+         Window.lockCursor();
+
+
+     }
+
+     public static void dispose() throws Exception {
+         //mesh.destroy();
+         Scene3D.dispose();
+         Renderer.dispose();
+         ModelUtilsAdvanced.disposeModel(model);
+         shader.destroy();
+     }
+ }
+ package game;
+
+ import engine.info.*;
+ import engine.logic.buffers.loader.*;
+ import engine.logic.input.*;
+ import engine.logic.systems.*;
+ import engine.logic.systems.tilemap.*;
+ import engine.logic.systems.world.*;
+ import engine.render.*;
+ import engine.render.graphics2d.*;
+ import org.joml.*;
+ import org.lwjgl.*;
+
+ import java.lang.Runtime;
+ import java.nio.*;
+ import java.util.*;
+
+ import static org.lwjgl.glfw.GLFW.*;
+
+ public class Main {
+     static Matrix4f worldMatrixMat;
+     static FloatBuffer worldMatrix;
+     static InstancedModel model, model2, ground, cover, sun;
+     static InstancedModel[] tilemapma;
+     static int camMoveX, camMoveY, camSpeed = 400, mSpeed = 20 / 4;
+     static Tilemap tilemap;
+
+
+     public static void main(String[] args) throws Exception {
+         Window.initialize();
+         initialize();
+
+         while (!glfwWindowShouldClose(Window.getWindow())) {
+             Window.beginWindow();
+
+             Window.update();
+             update();
+
+             Window.render();
+             render();
+
+             Window.stopWindow();
+         }
+
+         dispose();
+         Window.dispose();
+     }
+
+     public static void initialize() throws Exception {
+         Dyson.initializeDyson();
+
+         Renderer.initialize();
+
+         //ParticleManager.initialize();
+
+         //Vector2f defaultScale = new Vector2f((0.01f/1.8f/4.4f), (0.01f/4f));
+         Vector2f defaultScale = new Vector2f(1f/(Window.getWindowFramebuffer()[3]/2f), 1f/(Window.getWindowFramebuffer()[4]/2f));
+
+         worldMatrix = BufferUtils.createFloatBuffer(16);
+
+         worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
+         worldMatrixMat.get(worldMatrix);
+
+         model = new InstancedModel(new Rectangle(0, 0, 100, 100));
+         model.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model.getVertices()[2] = 0;
+         model.getVertices()[5] = 0;
+         model.getVertices()[8] = 0;
+         model.getVertices()[11] = 0;
+
+         model2 = new InstancedModel(new Rectangle(99, 0, 100, 100));
+         model2.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         model2.getVertices()[2] = 1;
+         model2.getVertices()[5] = 1;
+         model2.getVertices()[8] = 1;
+         model2.getVertices()[11] = 1;
+
+         ground = new InstancedModel(new Rectangle(-800, -400, 1600, 350));
+         ground.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         ground.getVertices()[2] = 2;
+         ground.getVertices()[5] = 2;
+         ground.getVertices()[8] = 2;
+         ground.getVertices()[11] = 2;
+
+         cover = new InstancedModel(new Rectangle(-300, 200, 1600, 350));
+         cover.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         cover.getVertices()[2] = 3;
+         cover.getVertices()[5] = 3;
+         cover.getVertices()[8] = 3;
+         cover.getVertices()[11] = 3;
+
+         sun = new InstancedModel(new Rectangle(600, 200, 200, 200));
+         sun.setTextureCoordinates(new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         });
+
+         sun.getVertices()[2] = 4;
+         sun.getVertices()[5] = 4;
+         sun.getVertices()[8] = 4;
+         sun.getVertices()[11] = 4;
+
+         ImageResource resource = ResourceLoader.loadImageResource("resources/textures/tex.png");
+
+         int[] tex = GLResourceLoader.createTextureResource(resource);
+
+         ImageResource sunTextureResource = ResourceLoader.loadImageResource("resources/textures/sun.png");
+
+         int[] sunTexture = GLResourceLoader.createTextureResource(sunTextureResource);
+
+         ImageResource groundTexResource = ResourceLoader.loadImageResource("resources/textures/ground.png");
+
+         int[] groundTex = GLResourceLoader.createTextureResource(groundTexResource);
+
+         ImageResource tilemapTexResource = ResourceLoader.loadImageResource("resources/textures/block_sheet.png");
+
+         int[] tilemapTex = GLResourceLoader.createTextureResource(tilemapTexResource);
+
+         model.setTexture(tex);
+         model2.setTexture(tex);
+
+         ground.setTexture(groundTex);
+         cover.setTexture(groundTex);
+
+         sun.setTexture(sunTexture);
+
+         SpritesheetSubImage sprite1;
+
+         int player_spawn_tile_id = 6;
+         int enemy_wall_tile_id = 7;
+         int enemy_spawn_tile_id = 8;
+
+         int[] exception_list = new int[3];
+         exception_list[0] = player_spawn_tile_id;
+         exception_list[1] = enemy_spawn_tile_id;
+         exception_list[2] = enemy_wall_tile_id;
+
+         tilemap = new Tilemap();
+
+         tilemap.initialize(64, 64);
+         tilemap.loadTilemap("resources/tilemaps/Game_Map3.csv");
+
+         HashMap<Integer, float[]> hmap = new HashMap<>();
+         //hmap.put(1, sprite1.generateTextureCoordinates(tilemapTexResource.getWidth().get(0), tilemapTexResource.getHeight().get(0)));
+         for (int i = 1; i < (tilemapTexResource.getWidth().get(0)/50); i++) {
+             sprite1 = new SpritesheetSubImage(new Rectangle(50 * i, 0, 50, 50));
+             hmap.put(i, sprite1.generateTextureCoordinates(tilemapTexResource.getWidth().get(0), tilemapTexResource.getHeight().get(0)));
+         }
+
+         tilemapma = tilemap.getTilemapAsModelArray(tilemapTex, hmap, exception_list, 300, 300, 16, 16, 5);
+         World.initialize();
+         //.applyForce("simpleforce", new Force(100, 500))
+         WorldObject object =  new WorldRectangle().initialize(0, 500, 100, 100, false);
+         Force myforce = new Force(0, 0);
+         System.out.println("f" + myforce.getForceX());
+         object.applyForce("MainForce", myforce);
+         World.addObject(object);
+         World.addObject(new WorldRectangle().initialize(0, -2000, 100, 100, true));
+
+         System.gc();
+
+         //System.out.println(n o);
+         //Runtime.getRuntime().exec(n o);
+
+         //76.4 MB
+
+         //Particle particle = new Particle(new Rectangle(0, 0, 50, 50), sunTexture, 2,
+         //        new ParticleBuffer(100, new int[] {
+         //                0, 10
+         //        })
+         //);
+         //ParticleManager.getParticles()[0] = particle;
+
+         //ResourceLoader.loadSpritesheet("resources/spritesheet/gametexturesheet.json");
+     }
+
+     public static void render() {
+         //model.getRectangle().setX(model.getRectangle().getX() + 1);
+         //model.updateVertices();
+         //model2.updateVertices();
+         //worldMatrixMat.translate(-3, 0, 0);
+
+         //worldMatrixMat.get(worldMatrix);
+
+         Renderer.renderModel(model);
+         Renderer.renderModel(model2);
+         Renderer.renderModel(ground);
+         Renderer.renderModel(cover);
+         Renderer.renderModel(sun);
+         Renderer.renderModels(tilemapma, tilemap.getWidth() * tilemap.getHeight());
+         Renderer.renderModels(World.generateModelArray(model.getTexture(), new float[] {
+                 0, 1,
+                 1, 1,
+                 1, 0,
+                 0, 0
+         }, 0), 2);
+         //Renderer.getLightPositionArray()[0] += 200f*5;
+         //System.out.println(Arrays.toString(Renderer.getLightPositionArray()));
+         //Renderer.renderModels(ParticleManager.getParticles());
+         //Renderer.renderModel(backgroundModel);
+
+         //ParticleManager.render();
+         Renderer.bufferToScreen(worldMatrix);
+
+     }
+
+     public static void update() {
+         System.out.println("Total memory = " + String.valueOf((((Runtime.getRuntime().totalMemory()/1024)/1024))) + "MB");
+         System.out.println("Memory used = "+(((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024) / 1024) + "MB");
+
+         //System.out.println(Math.floor(1.0f / Window.getDeltaTime()));
+
+         World.update();
+
+         if (Keyboard.isKeyDown(GLFW_KEY_W)) {
+             camMoveY -= camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(0, -camSpeed * Window.getDeltaTime(), 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_S)) {
+             camMoveY += camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(0, camSpeed * Window.getDeltaTime(), 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_A)) {
+             camMoveX += camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(camSpeed * Window.getDeltaTime(), 0, 0);
+         }
+
+         if (Keyboard.isKeyDown(GLFW_KEY_D)) {
+             camMoveX -= camSpeed * mSpeed * Window.getDeltaTime();
+             worldMatrixMat.translate(-camSpeed * Window.getDeltaTime(), 0, 0);
+         }
+
+         worldMatrixMat.get(worldMatrix);
+
+         Renderer.update();
+     }
+
+     public static void dispose() {
+         //ParticleManager.dispose();
+         Renderer.dispose();
+     }
+ }

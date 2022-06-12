@@ -1,0 +1,35 @@
+//Back face
+                -pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+                -pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+
+                //Front face
+                -pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+                -pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z,
+                pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+
+                //Right face
+                pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z,
+                pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+
+                //Left face
+                -pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+                -pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                -pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z,
+                -pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+
+                //Top face
+                -pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+                -pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,pos.Y+size.Y,pos.Z+size.Z,
+
+                //Bottom face
+                -pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z,
+                -pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,-pos.Z+size.Z,
+                pos.X+size.X,-pos.Y+size.Y,pos.Z+size.Z
