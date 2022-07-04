@@ -15,8 +15,6 @@ public class Dyson {
     public static void initializeDyson() {
         System.out.println("\n" + "Initializing Dyson" + "\n");
 
-        Window.initialize();
-
         System.out.println("Dyson Version: " + DYSON_VERSION + " | Dyson Build: " + DYSON_BUILD);
 
         System.out.println("GPU: " + glGetString(GL_RENDERER) + " | GPU Vendor: " + glGetString(GL_VENDOR) + "\n");
@@ -27,7 +25,7 @@ public class Dyson {
     }
 
     public static void disposeDyson() {
-        Window.dispose();
+
     }
 
 }

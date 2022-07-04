@@ -223,8 +223,8 @@ public class Main {
     }
 
     public static void update() {
-        System.out.println("Total memory = " + String.valueOf((((Runtime.getRuntime().totalMemory()/1024)/1024))) + "MB");
-        System.out.println("Memory used = "+(((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024) / 1024) + "MB");
+        //System.out.println("Total memory = " + String.valueOf((((Runtime.getRuntime().totalMemory()/1024)/1024))) + "MB");
+        //System.out.println("Memory used = "+(((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024) / 1024) + "MB");
 
         //System.out.println(Math.floor(1.0f / Window.getDeltaTime()));
 
@@ -248,15 +248,15 @@ public class Main {
             worldMatrixMat.translate(-camSpeed * Window.getDeltaTime(), 0, 0);
         }
 
-        Vector2f defaultScale = new Vector2f(1f/(Window.getWindowFramebuffer()[3]/2f), 1f/(Window.getWindowFramebuffer()[4]/2f));
-        worldMatrixMat = new Matrix4f().scale(defaultScale.x, defaultScale.y, 0);
         worldMatrixMat.get(worldMatrix);
 
+        Dyson.updateDyson();
         Renderer.update();
     }
 
     public static void dispose() {
         //ParticleManager.dispose();
         Renderer.dispose();
+        Dyson.disposeDyson();
     }
 }

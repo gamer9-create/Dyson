@@ -1,4 +1,4 @@
-package engine.render.ui2d;
+package engine.render.gui;
 
 import engine.logic.services.image.*;
 import engine.logic.systems.shape.Rectangle;

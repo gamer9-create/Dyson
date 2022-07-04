@@ -5,7 +5,7 @@ import org.joml.*;
 
 public class Constants {
 
-    public static final String windowTitle = "DysonEngineGame";
+    public static final String windowTitle = "Dyson";
     public static final String windowSize = "1600x800";
     public static final Vector4f windowColor = new Vector4f(0, (1f/255) * 204, 1, 1);
 
